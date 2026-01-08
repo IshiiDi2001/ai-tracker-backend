@@ -1,16 +1,29 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const cors = require("cors");
 const app = express();
 
 // ---------------- MIDDLEWARE ----------------
-app.use(
-  cors({
-    origin: "*", // allow all origins (or you can restrict to your extension ID)
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type"],
-  })
-);
+const cors = require("cors");
+
+// Temporary: allow all Chrome extension origins
+const corsOptions = {
+  origin: function (origin, callback) {
+    // allow requests with no origin (e.g., curl, Postman)
+    if (!origin) return callback(null, true);
+
+    // allow Chrome extensions
+    if (origin.startsWith("chrome-extension://")) return callback(null, true);
+
+    // otherwise block
+    callback(new Error("Not allowed by CORS"));
+  },
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type"],
+};
+
+// Apply CORS to all routes
+app.use(cors(corsOptions));
+
 app.use(express.json()); // parse JSON bodies
 app.use(express.static("public")); // serve static files (if any)
 app.set("view engine", "ejs"); // set EJS as view engine
