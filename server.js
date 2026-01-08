@@ -94,7 +94,9 @@ app.get("/", async (req, res) => {
 app.get("/my-analytics", async (req, res) => {
   try {
     // detect user IP automatically
-    const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+    const ip = (req.headers["x-forwarded-for"] || req.socket.remoteAddress)
+      .split(",")[0]
+      .trim();
 
     // fetch sessions only for this IP
     const sessions = await Session.find({ ipAddress: ip }).sort({
@@ -131,7 +133,9 @@ app.post("/api/sessions", async (req, res) => {
     const { sessionStart, sessionEnd, userCount, categories } = req.body;
 
     // detect user IP automatically
-    const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+    const ip = (req.headers["x-forwarded-for"] || req.socket.remoteAddress)
+      .split(",")[0]
+      .trim();
 
     const session = new Session({
       sessionStart,
