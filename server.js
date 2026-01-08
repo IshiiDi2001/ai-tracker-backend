@@ -1,19 +1,26 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const cors = require("cors");
 const app = express();
 
-// ---------------- MIDDLEWARE ----------------
-const cors = require("cors");
-app.set("trust proxy", 1); // ✅ REQUIRED on Render
+app.set("trust proxy", 1);
 
+// ✅ CORS FIRST
 app.use(
   cors({
-    origin: true, // ✅ reflect request origin automatically
-    credentials: false,
-    methods: ["GET", "POST", "OPTIONS"],
+    origin: true, // reflect request origin
+    methods: ["GET", "POST"], // OPTIONS handled automatically
     allowedHeaders: ["Content-Type"],
   })
 );
+
+// ✅ IMPORTANT: explicitly allow preflight
+app.use((req, res, next) => {
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+  next();
+});
 app.use(express.json()); // parse JSON bodies
 app.use(express.static("public")); // serve static files (if any)
 app.set("view engine", "ejs"); // set EJS as view engine
