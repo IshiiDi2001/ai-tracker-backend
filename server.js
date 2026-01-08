@@ -4,23 +4,16 @@ const app = express();
 
 // ---------------- MIDDLEWARE ----------------
 const cors = require("cors");
+app.set("trust proxy", 1); // ✅ REQUIRED on Render
 
-// Temporary: allow all Chrome extension origins
-const corsOptions = {
-  origin: function (origin, callback) {
-    // allow requests with no origin (e.g., curl, Postman)
-    if (!origin) return callback(null, true);
-
-    // allow Chrome extensions
-    if (origin.startsWith("chrome-extension://")) return callback(null, true);
-
-    // otherwise block
-    callback(new Error("Not allowed by CORS"));
-  },
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type"],
-};
-
+app.use(
+  cors({
+    origin: true, // ✅ reflect request origin automatically
+    credentials: false,
+    methods: ["GET", "POST", "OPTIONS"],
+    allowedHeaders: ["Content-Type"],
+  })
+);
 app.use(express.json()); // parse JSON bodies
 app.use(express.static("public")); // serve static files (if any)
 app.set("view engine", "ejs"); // set EJS as view engine
