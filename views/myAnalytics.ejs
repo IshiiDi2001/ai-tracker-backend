@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My Analytics</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        background: #f5f5f5;
+        margin: auto;
+      }
+      h2,
+      h3 {
+        text-align: center;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        background: white;
+        margin-bottom: 20px;
+      }
+      th,
+      td {
+        border: 1px solid #ccc;
+        padding: 8px;
+        text-align: center;
+        font-size: 14px;
+      }
+      th {
+        background: #333;
+        color: white;
+      }
+
+      /* Make category columns same width */
+      th.category,
+      td.category {
+        width: 110px;
+      }
+
+      /* Total Prompts column styling */
+      td.total-prompts {
+        background-color: #e0e0e0; /* ash color */
+        font-weight: bold;
+      }
+
+      /* Pie chart container */
+      .chart-container {
+        width: 400px;
+        height: 400px;
+        margin: 0 auto 30px auto;
+      }
+
+      /* Stats section */
+      .total-stats {
+        margin-bottom: 30px;
+        padding: 10px 20px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        background-color: #f9f9f9;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        /* width: 900px; */
+      }
+      /* Align colons */
+      .total-stats div {
+        display: flex;
+        justify-content: space-between;
+      }
+      .total-stats div span {
+        flex-shrink: 0;
+        width: 200px; /* fixed width for labels */
+        text-align: left;
+      }
+      .total-stats div strong {
+        text-align: right;
+      }
+      .ai-suggestions {
+        margin: 20px 0;
+        padding: 15px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        background-color: #f1f8ff;
+        width: 700px;
+        display: flex;
+        flex-direction: column; /* stack items vertically */
+        align-items: center;
+      }
+      .ai-suggestions h3 {
+        text-align: center;
+        margin-bottom: 10px;
+      }
+      #aiSuggestion {
+        font-size: 14px;
+        line-height: 1.5;
+        white-space: pre-line;
+        width: 100%; /* content stays nicely under h3 */
+        text-align: left;
+      }
+    </style>
+  </head>
+  <body>
+    <h3>Your Session Analytics</h3>
+
+    <!-- Session Table -->
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Session Start</th>
+          <th>Session End</th>
+          <th class="category">Idea Generation</th>
+          <th class="category">Refinement</th>
+          <th class="category">Information</th>
+          <th class="category">Cognitive</th>
+          <th class="category">Other</th>
+          <th class="total-prompts">Total Prompts</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% sessions.forEach((s, index) => { %>
+        <tr>
+          <td><%= index + 1 %></td>
+          <td><%= new Date(s.sessionStart).toLocaleString() %></td>
+          <td><%= new Date(s.sessionEnd).toLocaleString() %></td>
+          <td class="category"><%= s.categories.IDEA_GENERATION || 0 %></td>
+          <td class="category"><%= s.categories.REFINEMENT || 0 %></td>
+          <td class="category"><%= s.categories.INFORMATION || 0 %></td>
+          <td class="category"><%= s.categories.COGNITIVE || 0 %></td>
+          <td class="category"><%= s.categories.OTHER || 0 %></td>
+          <td class="total-prompts"><%= s.userCount %></td>
+        </tr>
+        <% }); %>
+      </tbody>
+    </table>
+
+    <!-- Total Usage Stats -->
+    <div class="total-stats">
+      <h3>Your Total Chat GPT Usage Stats</h3>
+      <div>
+        Total Messages Across All Sessions: <%= sessions.reduce((acc, s) => acc
+        + s.userCount, 0) %>
+      </div>
+      <div>Idea Generation: <%= totalCategories.IDEA_GENERATION %></div>
+      <div>Refinement: <%= totalCategories.REFINEMENT %></div>
+      <div>Information: <%= totalCategories.INFORMATION %></div>
+      <div>Cognitive: <%= totalCategories.COGNITIVE %></div>
+      <div>Other: <%= totalCategories.OTHER %></div>
+
+      <!-- Pie Chart -->
+      <div>
+        <div class="chart-container">
+          <canvas id="pieChart"></canvas>
+        </div>
+        <!-- AI Suggestions -->
+        <div class="ai-suggestions">
+          <h3>Suggestions based on your usage (AI Powered)</h3>
+          <div id="aiSuggestion">Loading suggestions...</div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const ctx = document.getElementById('pieChart').getContext('2d');
+      const pieChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels: ['Idea Generation', 'Refinement', 'Information', 'Cognitive', 'Other'],
+          datasets: [{
+            data: [
+              <%= totalCategories.IDEA_GENERATION %>,
+              <%= totalCategories.REFINEMENT %>,
+              <%= totalCategories.INFORMATION %>,
+              <%= totalCategories.COGNITIVE %>,
+              <%= totalCategories.OTHER %>
+            ],
+            backgroundColor: ['#4caf50','#2196f3','#ff9800','#9c27b0','#9e9e9e'],
+          }]
+        },
+        options: {
+          plugins: {
+            legend: { position: 'bottom' },
+            tooltip: { enabled: true }
+          },
+          maintainAspectRatio: false
+        }
+      });
+    </script>
+
+    <script>
+      async function getAISuggestions() {
+        const totals = {
+          IDEA_GENERATION: <%= totalCategories.IDEA_GENERATION %>,
+          REFINEMENT: <%= totalCategories.REFINEMENT %>,
+          INFORMATION: <%= totalCategories.INFORMATION %>,
+          COGNITIVE: <%= totalCategories.COGNITIVE %>,
+          OTHER: <%= totalCategories.OTHER %>
+        };
+
+        const GROQ_API_KEY = process.env.GROQ_API_KEY;
+        const GROQ_MODEL = "llama-3.1-8b-instant";
+        const prompt = `
+          You are an AI assistant. A user has the following ChatGPT usage stats:
+          Idea Generation: ${totals.IDEA_GENERATION}
+          Refinement: ${totals.REFINEMENT}
+          Information: ${totals.INFORMATION}
+          Cognitive: ${totals.COGNITIVE}
+          Other: ${totals.OTHER}
+
+          Guidelines for suggestions:
+          - Focus on reducing over-dependence on ChatGPT for thinking.
+          - Higher REFINEMENT usage is good and should be encouraged.
+          - Higher INFORMATION usage is good and safe.
+          - Higher COGNITIVE usage is not ideal and should be gently reduced.
+          - Suggestions must be friendly, supportive, and user-focused.
+          - Use phrases like "You have asked ChatGPT..." or "You tend to use ChatGPT..."
+          - Do NOT sound judgmental or negative.
+
+          Task:
+          Based on these stats, and the guidelines above give 3 practical suggestions to improve or optimize the user's ChatGPT usage.
+          Don't give suggestions about 'Other' category.
+          Respond in plain text as a numbered list. Don't add test styles like bold or * marks.
+        `;
+
+        try {
+          const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${GROQ_API_KEY}`,
+            },
+            body: JSON.stringify({
+              model: GROQ_MODEL,
+              messages: [
+                { role: "system", content: "You are an assistant providing usage suggestions." },
+                { role: "user", content: prompt }
+              ]
+            })
+          });
+
+          const data = await response.json();
+          const suggestion = data?.choices?.[0]?.message?.content || "No suggestions available.";
+          document.getElementById("aiSuggestion").innerText = suggestion;
+        } catch (err) {
+          console.error("AI suggestion error:", err);
+          document.getElementById("aiSuggestion").innerText = "Failed to load AI suggestions.";
+        }
+      }
+
+      getAISuggestions();
+    </script>
+  </body>
+</html>

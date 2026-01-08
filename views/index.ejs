@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>AI Interaction Dashboard</title>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        background: #f5f5f5;
+      }
+
+      h1 {
+        margin-bottom: 15px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        margin-bottom: 20px;
+      }
+
+      th,
+      td {
+        padding: 8px;
+        border: 1px solid #ddd;
+        text-align: center;
+        font-size: 14px;
+      }
+
+      th {
+        background: #333;
+        color: white;
+      }
+
+      button {
+        padding: 10px 15px;
+        background: #4caf50;
+        border: none;
+        color: white;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-bottom: 20px;
+      }
+
+      button:hover {
+        background: #43a047;
+      }
+
+      .chart-card {
+        background: white;
+        padding: 15px;
+        margin-bottom: 25px;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        width: 350px;
+      }
+
+      .charts-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <h3>AI Interaction Dashboard</h3>
+
+    <!-- ================= SESSION-WISE TABLE ================= -->
+
+    <table>
+      <tr>
+        <th>#</th>
+        <th>User</th>
+        <th>Session Start</th>
+        <th>Session End</th>
+        <th>Idea Generation</th>
+        <th>Refinement</th>
+        <th>Information</th>
+        <th>Cognitive</th>
+        <th>Other</th>
+        <th>Total Prompts</th>
+      </tr>
+
+      <% sessions.forEach((s, index) => { %>
+      <tr>
+        <td><%= index + 1 %></td>
+        <td>User <%= s.userNo %></td>
+        <td><%= new Date(s.sessionStart).toLocaleString() %></td>
+        <td><%= new Date(s.sessionEnd).toLocaleString() %></td>
+        <td><%= s.categories.IDEA_GENERATION || 0 %></td>
+        <td><%= s.categories.REFINEMENT || 0 %></td>
+        <td><%= s.categories.INFORMATION || 0 %></td>
+        <td><%= s.categories.COGNITIVE || 0 %></td>
+        <td><%= s.categories.OTHER || 0 %></td>
+        <td><%= s.userCount %></td>
+      </tr>
+      <% }) %>
+    </table>
+
+    <!-- ================= BUTTON ================= -->
+
+    <button onclick="toggleCharts()">See Per-User Charts</button>
+
+    <!-- ================= CHARTS (HIDDEN INITIALLY) ================= -->
+
+    <div id="chartsSection" style="display: none">
+      <div class="charts-container">
+        <% users.forEach(u => { %>
+        <div class="chart-card">
+          <h3>User <%= u.userNo %></h3>
+          <canvas id="chart-<%= u.userNo %>" width="300" height="300"></canvas>
+        </div>
+        <% }) %>
+      </div>
+    </div>
+
+    <!-- ================= JAVASCRIPT ================= -->
+
+    <script>
+      const usersData = <%- JSON.stringify(users) %>;
+      let chartsLoaded = false;
+
+      function toggleCharts() {
+        const section = document.getElementById("chartsSection");
+        section.style.display =
+          section.style.display === "none" ? "block" : "none";
+
+        if (!chartsLoaded) {
+          loadCharts();
+          chartsLoaded = true;
+        }
+      }
+
+      function loadCharts() {
+        usersData.forEach(user => {
+          new Chart(document.getElementById(`chart-${user.userNo}`), {
+            type: "pie",
+            data: {
+              labels: [
+                "Idea Generation",
+                "Refinement",
+                "Information",
+                "Cognitive",
+                "Other"
+              ],
+              datasets: [{
+                data: [
+                  user.categories.IDEA_GENERATION,
+                  user.categories.REFINEMENT,
+                  user.categories.INFORMATION,
+                  user.categories.COGNITIVE,
+                  user.categories.OTHER
+                ],
+                backgroundColor: [
+                  "#4caf50",
+                  "#2196f3",
+                  "#ff9800",
+                  "#9c27b0",
+                  "#9e9e9e"
+                ]
+              }]
+            },
+            options: {
+              responsive: true,
+              plugins: {
+                legend: {
+                  position: "bottom"
+                }
+              }
+            }
+          });
+        });
+      }
+    </script>
+  </body>
+</html>
