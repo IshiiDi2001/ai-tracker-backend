@@ -4,7 +4,14 @@ const cors = require("cors");
 const app = express();
 
 // ---------------- MIDDLEWARE ----------------
-app.use(cors()); // allow cross-origin requests
+app.use(
+  cors({
+    origin: "*", // allow all origins (or you can restrict to your extension ID)
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type"],
+  })
+);
+
 app.use(express.json()); // parse JSON bodies
 app.use(express.static("public")); // serve static files (if any)
 app.set("view engine", "ejs"); // set EJS as view engine
