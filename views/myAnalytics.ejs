@@ -122,8 +122,14 @@
         <% sessions.forEach((s, index) => { %>
         <tr>
           <td><%= index + 1 %></td>
-          <td><%= new Date(s.sessionStart).toLocaleString() %></td>
-          <td><%= new Date(s.sessionEnd).toLocaleString() %></td>
+          <td>
+            <%= new Date(s.sessionStart).toLocaleString('en-US', { timeZone:
+            'Asia/Kolkata' }) %>
+          </td>
+          <td>
+            <%= new Date(s.sessionEnd).toLocaleString('en-US', { timeZone:
+            'Asia/Kolkata' }) %>
+          </td>
           <td class="category"><%= s.categories.IDEA_GENERATION || 0 %></td>
           <td class="category"><%= s.categories.REFINEMENT || 0 %></td>
           <td class="category"><%= s.categories.INFORMATION || 0 %></td>
