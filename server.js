@@ -121,6 +121,7 @@ app.get("/my-analytics", async (req, res) => {
     res.render("myAnalytics", {
       sessions,
       totalCategories,
+      groqApiKey: process.env.GROQ_API_KEY,
     });
   } catch (err) {
     res.send("Error loading analytics: " + err.message);

@@ -204,7 +204,8 @@
           OTHER: <%= totalCategories.OTHER %>
         };
 
-        const GROQ_API_KEY = process.env.GROQ_API_KEY;
+
+        const GROQ_API_KEY = "<%= groqApiKey %>";
         const GROQ_MODEL = "llama-3.1-8b-instant";
         const prompt = `
           You are an AI assistant. A user has the following ChatGPT usage stats:
