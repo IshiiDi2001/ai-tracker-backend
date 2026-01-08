@@ -11,7 +11,7 @@ app.use(
     allowedHeaders: ["Content-Type"],
   })
 );
-
+app.options("*", cors());
 app.use(express.json()); // parse JSON bodies
 app.use(express.static("public")); // serve static files (if any)
 app.set("view engine", "ejs"); // set EJS as view engine
