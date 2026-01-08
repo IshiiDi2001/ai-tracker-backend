@@ -21,10 +21,6 @@ const corsOptions = {
   allowedHeaders: ["Content-Type"],
 };
 
-// Apply CORS to all routes
-app.use(cors(corsOptions));
-app.options("/api/:path*", cors(corsOptions));
-
 app.use(express.json()); // parse JSON bodies
 app.use(express.static("public")); // serve static files (if any)
 app.set("view engine", "ejs"); // set EJS as view engine
