@@ -206,15 +206,17 @@
         <!-- ================= BUTTON ================= -->
         <button onclick="toggleCharts()">See Per-User Charts</button>
 
-        <!-- ================= CHARTS (HIDDEN INITIALLY) ================= -->
-        <div id="chartsSection" style="display: none">
-          <div>
-            <% users.forEach(u => { %>
-            <div class="chart-card">
-              <h3>User <%= u.userNo %></h3>
-              <canvas id="chart-<%= u.userNo %>"></canvas>
+        <div class="card">
+          <!-- ================= CHARTS (HIDDEN INITIALLY) ================= -->
+          <div id="chartsSection" style="display: none">
+            <div class="chart-container">
+              <% users.forEach(u => { %>
+              <div class="chart-card">
+                <h3>User <%= u.userNo %></h3>
+                <canvas id="chart-<%= u.userNo %>"></canvas>
+              </div>
+              <% }) %>
             </div>
-            <% }) %>
           </div>
         </div>
       </div>
