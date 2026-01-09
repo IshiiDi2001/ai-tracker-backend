@@ -112,7 +112,7 @@
         height: 350px;
       }
 
-      button {
+      .button {
         padding: 10px 15px;
         background: #4caf50;
         border: none;
@@ -122,7 +122,7 @@
         margin-bottom: 20px;
       }
 
-      button:hover {
+      .button:hover {
         background: #43a047;
       }
 
@@ -203,10 +203,9 @@
           </div>
         </div>
 
-        <!-- ================= BUTTON ================= -->
-        <button onclick="toggleCharts()">See Per-User Charts</button>
-
         <div class="card">
+          <!-- ================= BUTTON ================= -->
+          <button onclick="toggleCharts()">See Per-User Charts</button>
           <!-- ================= CHARTS (HIDDEN INITIALLY) ================= -->
           <div id="chartsSection" style="display: none">
             <div class="chart-container">
