@@ -112,7 +112,7 @@
         height: 350px;
       }
 
-      .button {
+      .chart-btn {
         padding: 10px 15px;
         background: #4caf50;
         border: none;
@@ -122,7 +122,7 @@
         margin-bottom: 20px;
       }
 
-      .button:hover {
+      .chart-btn:hover {
         background: #43a047;
       }
 
@@ -151,6 +151,7 @@
 
       <!-- ================= SESSION-WISE TABLE ================= -->
       <div class="card">
+        <h3>Users' Session Analytics</h3>
         <table>
           <tr>
             <th>#</th>
@@ -205,7 +206,9 @@
 
         <div class="card">
           <!-- ================= BUTTON ================= -->
-          <button onclick="toggleCharts()">See Per-User Charts</button>
+          <button class="chart-btn" onclick="toggleCharts()">
+            See Per-User Charts
+          </button>
           <!-- ================= CHARTS (HIDDEN INITIALLY) ================= -->
           <div id="chartsSection" style="display: none">
             <div class="chart-container">
