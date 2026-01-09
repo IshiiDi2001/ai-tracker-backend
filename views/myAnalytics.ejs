@@ -3,164 +3,213 @@
   <head>
     <title>My Analytics</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
-      body {
-        font-family: Arial, sans-serif;
-        padding: 20px;
-        background: #f5f5f5;
-        margin: auto;
-      }
-      h2,
-      h3 {
-        text-align: center;
-      }
-      table {
-        border-collapse: collapse;
-        width: 100%;
-        background: white;
-        margin-bottom: 20px;
-      }
-      th,
-      td {
-        border: 1px solid #ccc;
-        padding: 8px;
-        text-align: center;
-        font-size: 14px;
-      }
-      th {
-        background: #333;
-        color: white;
+      * {
+        box-sizing: border-box;
       }
 
-      /* Make category columns same width */
+      body {
+        font-family: "Segoe UI", Arial, sans-serif;
+        background: #f4f6f9;
+        margin: 0;
+        padding: 30px;
+        color: #333;
+      }
+
+      h2,
+      h3 {
+        margin: 0;
+      }
+
+      h3 {
+        margin-bottom: 15px;
+      }
+
+      /* Page container */
+      .dashboard {
+        max-width: 1300px;
+        margin: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+      }
+
+      /* Card */
+      .card {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      }
+
+      /* Table */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+
+      th,
+      td {
+        padding: 10px;
+        border-bottom: 1px solid #e0e0e0;
+        text-align: center;
+      }
+
+      th {
+        background: #2c2c2c;
+        color: #fff;
+        font-weight: 600;
+      }
+
+      tr:hover {
+        background-color: #f8f9fc;
+      }
+
       th.category,
       td.category {
         width: 110px;
       }
 
-      /* Total Prompts column styling */
       td.total-prompts {
-        background-color: #e0e0e0; /* ash color */
+        background-color: #f0f0f0;
         font-weight: bold;
       }
 
-      /* Pie chart container */
-      .chart-container {
-        width: 400px;
-        height: 400px;
-        margin: 0 auto 30px auto;
+      /* Bottom layout */
+      .bottom-section {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
       }
 
-      /* Stats section */
-      .total-stats {
-        margin-bottom: 30px;
-        padding: 10px 20px;
-        border: 1px solid #ccc;
-        border-radius: 6px;
-        background-color: #f9f9f9;
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-        /* width: 900px; */
-      }
-      /* Align colons */
+      /* Stats */
       .total-stats div {
         display: flex;
         justify-content: space-between;
+        padding: 6px 0;
+        font-size: 14px;
       }
-      .total-stats div span {
-        flex-shrink: 0;
-        width: 200px; /* fixed width for labels */
-        text-align: left;
-      }
+
       .total-stats div strong {
-        text-align: right;
+        font-weight: 600;
       }
+
+      /* Chart */
+      .chart-container {
+        width: 100%;
+        height: 350px;
+      }
+
+      /* AI Suggestions */
       .ai-suggestions {
-        margin: 20px 0;
-        padding: 15px;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        background-color: #f1f8ff;
-        width: 700px;
-        display: flex;
-        flex-direction: column; /* stack items vertically */
-        align-items: center;
+        background: #f1f8ff;
+        border: 1px solid #d6e8ff;
+        border-radius: 10px;
+        padding: 20px;
       }
-      .ai-suggestions h3 {
-        text-align: center;
-        margin-bottom: 10px;
-      }
+
       #aiSuggestion {
         font-size: 14px;
-        line-height: 1.5;
+        line-height: 1.6;
         white-space: pre-line;
-        width: 100%; /* content stays nicely under h3 */
-        text-align: left;
+      }
+
+      /* Responsive */
+      @media (max-width: 900px) {
+        .bottom-section {
+          grid-template-columns: 1fr;
+        }
       }
     </style>
   </head>
+
   <body>
-    <h3>Your Session Analytics</h3>
-
-    <!-- Session Table -->
-    <table>
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Session Start</th>
-          <th>Session End</th>
-          <th class="category">Idea Generation</th>
-          <th class="category">Refinement</th>
-          <th class="category">Information</th>
-          <th class="category">Cognitive</th>
-          <th class="category">Other</th>
-          <th class="total-prompts">Total Prompts</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% sessions.forEach((s, index) => { %>
-        <tr>
-          <td><%= index + 1 %></td>
-          <td>
-            <%= new Date(s.sessionStart).toLocaleString('en-US', { timeZone:
-            'Asia/Kolkata' }) %>
-          </td>
-          <td>
-            <%= new Date(s.sessionEnd).toLocaleString('en-US', { timeZone:
-            'Asia/Kolkata' }) %>
-          </td>
-          <td class="category"><%= s.categories.IDEA_GENERATION || 0 %></td>
-          <td class="category"><%= s.categories.REFINEMENT || 0 %></td>
-          <td class="category"><%= s.categories.INFORMATION || 0 %></td>
-          <td class="category"><%= s.categories.COGNITIVE || 0 %></td>
-          <td class="category"><%= s.categories.OTHER || 0 %></td>
-          <td class="total-prompts"><%= s.userCount %></td>
-        </tr>
-        <% }); %>
-      </tbody>
-    </table>
-
-    <!-- Total Usage Stats -->
-    <div class="total-stats">
-      <h3>Your Total Chat GPT Usage Stats</h3>
-      <div>
-        Total Messages Across All Sessions: <%= sessions.reduce((acc, s) => acc
-        + s.userCount, 0) %>
+    <div class="dashboard">
+      <!-- Session Analytics -->
+      <div class="card">
+        <h3>Your Session Analytics</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Session Start</th>
+              <th>Session End</th>
+              <th class="category">Idea Generation</th>
+              <th class="category">Refinement</th>
+              <th class="category">Information</th>
+              <th class="category">Cognitive</th>
+              <th class="category">Other</th>
+              <th>Total Prompts</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% sessions.forEach((s, index) => { %>
+            <tr>
+              <td><%= index + 1 %></td>
+              <td>
+                <%= new Date(s.sessionStart).toLocaleString('en-US', { timeZone:
+                'Asia/Kolkata' }) %>
+              </td>
+              <td>
+                <%= new Date(s.sessionEnd).toLocaleString('en-US', { timeZone:
+                'Asia/Kolkata' }) %>
+              </td>
+              <td class="category"><%= s.categories.IDEA_GENERATION || 0 %></td>
+              <td class="category"><%= s.categories.REFINEMENT || 0 %></td>
+              <td class="category"><%= s.categories.INFORMATION || 0 %></td>
+              <td class="category"><%= s.categories.COGNITIVE || 0 %></td>
+              <td class="category"><%= s.categories.OTHER || 0 %></td>
+              <td class="total-prompts"><%= s.userCount %></td>
+            </tr>
+            <% }); %>
+          </tbody>
+        </table>
       </div>
-      <div>Idea Generation: <%= totalCategories.IDEA_GENERATION %></div>
-      <div>Refinement: <%= totalCategories.REFINEMENT %></div>
-      <div>Information: <%= totalCategories.INFORMATION %></div>
-      <div>Cognitive: <%= totalCategories.COGNITIVE %></div>
-      <div>Other: <%= totalCategories.OTHER %></div>
 
-      <!-- Pie Chart -->
-      <div>
-        <div class="chart-container">
-          <canvas id="pieChart"></canvas>
+      <!-- Bottom Section -->
+      <div class="bottom-section">
+        <!-- Stats + Chart -->
+        <div class="card">
+          <h3>Your Total ChatGPT Usage Stats</h3>
+
+          <div class="total-stats">
+            <div>
+              <span>Total Messages Across All Sessions</span>
+              <strong
+                ><%= sessions.reduce((acc, s) => acc + s.userCount, 0)
+                %></strong
+              >
+            </div>
+            <div>
+              <span>Idea Generation</span
+              ><strong><%= totalCategories.IDEA_GENERATION %></strong>
+            </div>
+            <div>
+              <span>Refinement</span
+              ><strong><%= totalCategories.REFINEMENT %></strong>
+            </div>
+            <div>
+              <span>Information</span
+              ><strong><%= totalCategories.INFORMATION %></strong>
+            </div>
+            <div>
+              <span>Cognitive</span
+              ><strong><%= totalCategories.COGNITIVE %></strong>
+            </div>
+            <div>
+              <span>Other</span><strong><%= totalCategories.OTHER %></strong>
+            </div>
+          </div>
+
+          <div class="chart-container">
+            <canvas id="pieChart"></canvas>
+          </div>
         </div>
+
         <!-- AI Suggestions -->
-        <div class="ai-suggestions">
+        <div class="card ai-suggestions">
           <h3>Suggestions based on your usage (AI Powered)</h3>
           <div id="aiSuggestion">Loading suggestions...</div>
         </div>
