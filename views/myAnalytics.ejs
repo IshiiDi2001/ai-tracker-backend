@@ -43,6 +43,26 @@
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
       }
 
+      /* Header */
+      .page-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .page-header img {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        object-fit: cover;
+      }
+
+      .page-header h2 {
+        margin: 0;
+        font-size: 22px;
+        font-weight: 600;
+      }
+
       /* Table */
       table {
         width: 100%;
@@ -128,6 +148,12 @@
   <body>
     <div class="dashboard">
       <!-- Session Analytics -->
+      <div class="card">
+        <div class="card page-header">
+          <img src="/chatgpt.png" alt="ChatGPT Icon" />
+          <h2>Your ChatGPT Usage Analytics</h2>
+        </div>
+      </div>
       <div class="card">
         <h3>Your Session Analytics</h3>
         <table>
@@ -275,7 +301,7 @@
 
           Task:
           Based on these stats, and the guidelines above give 3 practical suggestions to improve or optimize the user's ChatGPT usage.
-          Don't give suggestions about 'Other' category.
+          Don't give suggestions about 'Other' category. Don't use user, instead use you.
           Respond in plain text as a numbered list. Don't add test styles like bold or * marks.
         `;
 
