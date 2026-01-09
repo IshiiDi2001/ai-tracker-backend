@@ -108,12 +108,21 @@
       <% }) %>
     </table>
 
-    <!-- ================= BUTTON ================= -->
+    <!-- ================= TOTAL USER STATS ================= -->
+    <div class="chart-card">
+      <h3>Total User Statistics</h3>
 
+      <p>
+        <strong>Total User Messages:</strong> <span id="totalMessages"></span>
+      </p>
+
+      <canvas id="totalPieChart" width="300" height="300"></canvas>
+    </div>
+
+    <!-- ================= BUTTON ================= -->
     <button onclick="toggleCharts()">See Per-User Charts</button>
 
     <!-- ================= CHARTS (HIDDEN INITIALLY) ================= -->
-
     <div id="chartsSection" style="display: none">
       <div class="charts-container">
         <% users.forEach(u => { %>
@@ -129,59 +138,126 @@
 
     <script>
       const usersData = <%- JSON.stringify(users) %>;
-      let chartsLoaded = false;
 
-      function toggleCharts() {
-        const section = document.getElementById("chartsSection");
-        section.style.display =
-          section.style.display === "none" ? "block" : "none";
+      // ================= TOTAL CALCULATIONS =================
+      const totalCategories = {
+        IDEA_GENERATION: 0,
+        REFINEMENT: 0,
+        INFORMATION: 0,
+        COGNITIVE: 0,
+        OTHER: 0,
+      };
 
-        if (!chartsLoaded) {
-          loadCharts();
-          chartsLoaded = true;
+      let totalMessages = 0;
+
+      usersData.forEach(user => {
+        totalMessages +=
+          user.categories.IDEA_GENERATION +
+          user.categories.REFINEMENT +
+          user.categories.INFORMATION +
+          user.categories.COGNITIVE +
+          user.categories.OTHER;
+
+        for (const key in totalCategories) {
+          totalCategories[key] += user.categories[key];
         }
-      }
+      });
 
-      function loadCharts() {
-        usersData.forEach(user => {
-          new Chart(document.getElementById(`chart-${user.userNo}`), {
-            type: "pie",
-            data: {
-              labels: [
-                "Idea Generation",
-                "Refinement",
-                "Information",
-                "Cognitive",
-                "Other"
+      document.getElementById("totalMessages").innerText = totalMessages;
+
+      // ================= TOTAL PIE CHART =================
+      new Chart(document.getElementById("totalPieChart"), {
+        type: "pie",
+        data: {
+          labels: [
+            "Idea Generation",
+            "Refinement",
+            "Information",
+            "Cognitive",
+            "Other",
+          ],
+          datasets: [
+            {
+              data: [
+                totalCategories.IDEA_GENERATION,
+                totalCategories.REFINEMENT,
+                totalCategories.INFORMATION,
+                totalCategories.COGNITIVE,
+                totalCategories.OTHER,
               ],
-              datasets: [{
-                data: [
-                  user.categories.IDEA_GENERATION,
-                  user.categories.REFINEMENT,
-                  user.categories.INFORMATION,
-                  user.categories.COGNITIVE,
-                  user.categories.OTHER
-                ],
-                backgroundColor: [
-                  "#4caf50",
-                  "#2196f3",
-                  "#ff9800",
-                  "#9c27b0",
-                  "#9e9e9e"
-                ]
-              }]
+              backgroundColor: [
+                "#4caf50",
+                "#2196f3",
+                "#ff9800",
+                "#9c27b0",
+                "#9e9e9e",
+              ],
             },
-            options: {
-              responsive: true,
-              plugins: {
-                legend: {
-                  position: "bottom"
-                }
-              }
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: "bottom",
+            },
+          },
+        },
+      });
+
+          let chartsLoaded = false;
+
+          function toggleCharts() {
+            const section = document.getElementById("chartsSection");
+            section.style.display =
+              section.style.display === "none" ? "block" : "none";
+
+            if (!chartsLoaded) {
+              loadCharts();
+              chartsLoaded = true;
             }
-          });
-        });
-      }
+          }
+
+          function loadCharts() {
+            usersData.forEach(user => {
+              new Chart(document.getElementById(`chart-${user.userNo}`), {
+                type: "pie",
+                data: {
+                  labels: [
+                    "Idea Generation",
+                    "Refinement",
+                    "Information",
+                    "Cognitive",
+                    "Other"
+                  ],
+                  datasets: [{
+                    data: [
+                      user.categories.IDEA_GENERATION,
+                      user.categories.REFINEMENT,
+                      user.categories.INFORMATION,
+                      user.categories.COGNITIVE,
+                      user.categories.OTHER
+                    ],
+                    backgroundColor: [
+                      "#4caf50",
+                      "#2196f3",
+                      "#ff9800",
+                      "#9c27b0",
+                      "#9e9e9e"
+                    ]
+                  }]
+                },
+                options: {
+                  responsive: true,
+                  plugins: {
+                    legend: {
+                      position: "bottom"
+                    }
+                  }
+                }
+              });
+            });
+          }
     </script>
   </body>
 </html>
