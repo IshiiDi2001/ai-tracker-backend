@@ -45,7 +45,7 @@ const Session = mongoose.model("Session", sessionSchema);
 // ---------------- ROUTES ----------------
 
 // Dashboard route
-app.get("/", async (req, res) => {
+app.get("/total-user-analytics", async (req, res) => {
   try {
     const sessions = await Session.find().sort({ sessionStart: 1 });
 
