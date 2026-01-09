@@ -7,34 +7,109 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-      body {
-        font-family: Arial, sans-serif;
-        padding: 20px;
-        background: #f5f5f5;
+      * {
+        box-sizing: border-box;
       }
 
-      h1 {
+      body {
+        font-family: "Segoe UI", Arial, sans-serif;
+        background: #f4f6f9;
+        margin: 0;
+        padding: 30px;
+        color: #333;
+      }
+
+      h2,
+      h3 {
+        margin: 0;
+      }
+
+      h3 {
         margin-bottom: 15px;
       }
 
+      /* Page container */
+      .dashboard {
+        max-width: 1300px;
+        margin: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+      }
+
+      /* Card */
+      .card {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      }
+
+      /* Header */
+      .page-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .page-header img {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        object-fit: cover;
+      }
+
+      .page-header h2 {
+        margin: 0;
+        font-size: 22px;
+        font-weight: 600;
+      }
+
+      /* Table */
       table {
         width: 100%;
         border-collapse: collapse;
-        background: white;
-        margin-bottom: 20px;
+        font-size: 14px;
       }
 
       th,
       td {
-        padding: 8px;
-        border: 1px solid #ddd;
+        padding: 10px;
+        border-bottom: 1px solid #e0e0e0;
         text-align: center;
-        font-size: 14px;
       }
 
       th {
-        background: #333;
-        color: white;
+        background: #2c2c2c;
+        color: #fff;
+        font-weight: 600;
+      }
+
+      tr:hover {
+        background-color: #f8f9fc;
+      }
+
+      th.category,
+      td.category {
+        width: 110px;
+      }
+
+      td.total-prompts {
+        background-color: #f0f0f0;
+        font-weight: bold;
+      }
+
+      /* Bottom layout */
+      .bottom-section {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+      }
+
+      /* Chart */
+      .chart-container {
+        width: 100%;
+        height: 350px;
       }
 
       button {
@@ -68,73 +143,82 @@
     </style>
   </head>
   <body>
-    <h3>AI Interaction Dashboard</h3>
+    <div class="dashboard">
+      <div class="card page-header">
+        <img src="/chatgpt.png" alt="ChatGPT Icon" />
+        <h2>ChatGPT Usage Analytics</h2>
+      </div>
 
-    <!-- ================= SESSION-WISE TABLE ================= -->
+      <!-- ================= SESSION-WISE TABLE ================= -->
+      <div class="card">
+        <table>
+          <tr>
+            <th>#</th>
+            <th>User</th>
+            <th>Session Start</th>
+            <th>Session End</th>
+            <th class="category">Idea Generation</th>
+            <th class="category">Refinement</th>
+            <th class="category">Information</th>
+            <th class="category">Cognitive</th>
+            <th class="category">Other</th>
+            <th>Total Prompts</th>
+          </tr>
 
-    <table>
-      <tr>
-        <th>#</th>
-        <th>User</th>
-        <th>Session Start</th>
-        <th>Session End</th>
-        <th>Idea Generation</th>
-        <th>Refinement</th>
-        <th>Information</th>
-        <th>Cognitive</th>
-        <th>Other</th>
-        <th>Total Prompts</th>
-      </tr>
+          <% sessions.forEach((s, index) => { %>
+          <tr>
+            <td><%= index + 1 %></td>
+            <td>User <%= s.userNo %></td>
+            <td>
+              <%= new Date(s.sessionStart).toLocaleString('en-US', { timeZone:
+              'Asia/Kolkata' }) %>
+            </td>
+            <td>
+              <%= new Date(s.sessionEnd).toLocaleString('en-US', { timeZone:
+              'Asia/Kolkata' }) %>
+            </td>
+            <td class="category"><%= s.categories.IDEA_GENERATION || 0 %></td>
+            <td class="category"><%= s.categories.REFINEMENT || 0 %></td>
+            <td class="category"><%= s.categories.INFORMATION || 0 %></td>
+            <td class="category"><%= s.categories.COGNITIVE || 0 %></td>
+            <td class="category"><%= s.categories.OTHER || 0 %></td>
+            <td class="total-prompts"><%= s.userCount %></td>
+          </tr>
+          <% }) %>
+        </table>
+      </div>
 
-      <% sessions.forEach((s, index) => { %>
-      <tr>
-        <td><%= index + 1 %></td>
-        <td>User <%= s.userNo %></td>
-        <td>
-          <%= new Date(s.sessionStart).toLocaleString('en-US', { timeZone:
-          'Asia/Kolkata' }) %>
-        </td>
-        <td>
-          <%= new Date(s.sessionEnd).toLocaleString('en-US', { timeZone:
-          'Asia/Kolkata' }) %>
-        </td>
-        <td><%= s.categories.IDEA_GENERATION || 0 %></td>
-        <td><%= s.categories.REFINEMENT || 0 %></td>
-        <td><%= s.categories.INFORMATION || 0 %></td>
-        <td><%= s.categories.COGNITIVE || 0 %></td>
-        <td><%= s.categories.OTHER || 0 %></td>
-        <td><%= s.userCount %></td>
-      </tr>
-      <% }) %>
-    </table>
+      <!-- Bottom Section -->
+      <div class="bottom-section">
+        <!-- Stats + Chart -->
+        <div class="card">
+          <h3>Total ChatGPT Usage Stats</h3>
 
-    <!-- ================= TOTAL USER STATS ================= -->
-    <div class="chart-card">
-      <h3>Total User Statistics</h3>
-
-      <p>
-        <strong>Total User Messages:</strong> <span id="totalMessages"></span>
-      </p>
-
-      <canvas id="totalPieChart" width="300" height="300"></canvas>
-    </div>
-
-    <!-- ================= BUTTON ================= -->
-    <button onclick="toggleCharts()">See Per-User Charts</button>
-
-    <!-- ================= CHARTS (HIDDEN INITIALLY) ================= -->
-    <div id="chartsSection" style="display: none">
-      <div class="charts-container">
-        <% users.forEach(u => { %>
-        <div class="chart-card">
-          <h3>User <%= u.userNo %></h3>
-          <canvas id="chart-<%= u.userNo %>" width="300" height="300"></canvas>
+          <p>
+            <strong>Total User Messages:</strong>
+            <span id="totalMessages"></span>
+          </p>
+          <div class="chart-container">
+            <canvas id="totalPieChart"></canvas>
+          </div>
         </div>
-        <% }) %>
+
+        <!-- ================= BUTTON ================= -->
+        <button onclick="toggleCharts()">See Per-User Charts</button>
+
+        <!-- ================= CHARTS (HIDDEN INITIALLY) ================= -->
+        <div id="chartsSection" style="display: none">
+          <div>
+            <% users.forEach(u => { %>
+            <div class="chart-card">
+              <h3>User <%= u.userNo %></h3>
+              <canvas id="chart-<%= u.userNo %>"></canvas>
+            </div>
+            <% }) %>
+          </div>
+        </div>
       </div>
     </div>
-
-    <!-- ================= JAVASCRIPT ================= -->
 
     <script>
       const usersData = <%- JSON.stringify(users) %>;
