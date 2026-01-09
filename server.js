@@ -46,6 +46,10 @@ const Session = mongoose.model("Session", sessionSchema);
 
 // Dashboard route
 app.get("/total-user-analytics", async (req, res) => {
+  // ADMIN PROTECTION
+  if (req.query.secret !== process.env.ADMIN_SECRET) {
+    return res.status(403).send("Forbidden");
+  }
   try {
     const sessions = await Session.find().sort({ sessionStart: 1 });
 
