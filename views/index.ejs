@@ -112,20 +112,6 @@
         height: 350px;
       }
 
-      .chart-btn {
-        padding: 10px 15px;
-        background: #4caf50;
-        border: none;
-        color: white;
-        border-radius: 5px;
-        cursor: pointer;
-        margin-bottom: 20px;
-      }
-
-      .chart-btn:hover {
-        background: #43a047;
-      }
-
       .chart-card {
         background: white;
         padding: 15px;
@@ -233,13 +219,8 @@
         </div>
 
         <div class="card">
-          <!-- ================= BUTTON ================= -->
-          <button class="chart-btn" onclick="toggleCharts()">
-            See Per-User Charts
-          </button>
-
-          <!-- ================= CHARTS (CAROUSEL) ================= -->
-          <div id="chartsSection" style="display: none">
+          <h3>Per-User charts</h3>
+          <div id="chartsSection" style="display: flex; align-items: center">
             <div class="carousel-card">
               <button id="prevBtn" class="arrow-btn">
                 <img src="/left.png" width="30" />
