@@ -106,6 +106,18 @@
         gap: 30px;
       }
 
+      /* Stats */
+      .total-stats div {
+        display: flex;
+        justify-content: space-between;
+        padding: 6px 0;
+        font-size: 14px;
+      }
+
+      .total-stats div strong {
+        font-weight: 600;
+      }
+
       /* Chart */
       .chart-container {
         width: 100%;
@@ -209,18 +221,25 @@
         <!-- Stats + Chart -->
         <div class="card">
           <h3>Total ChatGPT Usage Stats</h3>
-
-          <p>
-            <strong>Total User Messages:</strong>
-            <span id="totalMessages"></span>
-          </p>
-          <p><strong>Idea Generation:</strong> <span id="ideaCount"></span></p>
-          <p><strong>Refinement:</strong> <span id="refinementCount"></span></p>
-          <p>
-            <strong>Information:</strong> <span id="informationCount"></span>
-          </p>
-          <p><strong>Cognitive:</strong> <span id="cognitiveCount"></span></p>
-          <p><strong>Other:</strong> <span id="otherCount"></span></p>
+          <div class="total-stats">
+            <div>
+              <span>Total User Messages:</span>
+              <strong id="totalMessages"></strong>
+            </div>
+            <div>
+              <span>Idea Generation:</span> <strong id="ideaCount"></strong>
+            </div>
+            <div>
+              <span>Refinement:</span> <strong id="refinementCount"></strong>
+            </div>
+            <div>
+              <span>Information:</span> <strong id="informationCount"></strong>
+            </div>
+            <div>
+              <span>Cognitive:</span> <strong id="cognitiveCount"></strong>
+            </div>
+            <div><span>Other:</span> <strong id="otherCount"></strong></div>
+          </div>
           <div class="chart-container">
             <canvas id="totalPieChart"></canvas>
           </div>
