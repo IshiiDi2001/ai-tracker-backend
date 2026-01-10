@@ -140,6 +140,27 @@
         flex-wrap: wrap;
         gap: 20px;
       }
+
+      .carousel-card {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .arrow-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+      }
+
+      .arrow-btn img {
+        width: 35px;
+        opacity: 0.7;
+      }
+
+      .arrow-btn:hover img {
+        opacity: 1;
+      }
     </style>
   </head>
   <body>
@@ -199,6 +220,13 @@
             <strong>Total User Messages:</strong>
             <span id="totalMessages"></span>
           </p>
+          <p><strong>Idea Generation:</strong> <span id="ideaCount"></span></p>
+          <p><strong>Refinement:</strong> <span id="refinementCount"></span></p>
+          <p>
+            <strong>Information:</strong> <span id="informationCount"></span>
+          </p>
+          <p><strong>Cognitive:</strong> <span id="cognitiveCount"></span></p>
+          <p><strong>Other:</strong> <span id="otherCount"></span></p>
           <div class="chart-container">
             <canvas id="totalPieChart"></canvas>
           </div>
@@ -209,15 +237,22 @@
           <button class="chart-btn" onclick="toggleCharts()">
             See Per-User Charts
           </button>
-          <!-- ================= CHARTS (HIDDEN INITIALLY) ================= -->
+
+          <!-- ================= CHARTS (CAROUSEL) ================= -->
           <div id="chartsSection" style="display: none">
-            <div class="chart-container">
-              <% users.forEach(u => { %>
+            <div class="carousel-card">
+              <button id="prevBtn" class="arrow-btn">
+                <img src="/left.png" width="30" />
+              </button>
+
               <div class="chart-card">
-                <h3>User <%= u.userNo %></h3>
-                <canvas id="chart-<%= u.userNo %>"></canvas>
+                <h3 id="userTitle"></h3>
+                <canvas id="singleChart"></canvas>
               </div>
-              <% }) %>
+
+              <button id="nextBtn" class="arrow-btn">
+                <img src="/right.png" width="30" />
+              </button>
             </div>
           </div>
         </div>
@@ -225,127 +260,146 @@
     </div>
 
     <script>
-      const usersData = <%- JSON.stringify(users) %>;
+          const usersData = <%- JSON.stringify(users) %>;
 
-      // ================= TOTAL CALCULATIONS =================
-      const totalCategories = {
-        IDEA_GENERATION: 0,
-        REFINEMENT: 0,
-        INFORMATION: 0,
-        COGNITIVE: 0,
-        OTHER: 0,
-      };
+          // ================= TOTAL CALCULATIONS =================
+          const totalCategories = {
+            IDEA_GENERATION: 0,
+            REFINEMENT: 0,
+            INFORMATION: 0,
+            COGNITIVE: 0,
+            OTHER: 0,
+          };
 
-      let totalMessages = 0;
+          let totalMessages = 0;
 
-      usersData.forEach(user => {
-        totalMessages +=
-          user.categories.IDEA_GENERATION +
-          user.categories.REFINEMENT +
-          user.categories.INFORMATION +
-          user.categories.COGNITIVE +
-          user.categories.OTHER;
+          usersData.forEach(user => {
+            totalMessages +=
+              user.categories.IDEA_GENERATION +
+              user.categories.REFINEMENT +
+              user.categories.INFORMATION +
+              user.categories.COGNITIVE +
+              user.categories.OTHER;
 
-        for (const key in totalCategories) {
-          totalCategories[key] += user.categories[key];
+            for (const key in totalCategories) {
+              totalCategories[key] += user.categories[key];
+            }
+          });
+
+          document.getElementById("totalMessages").innerText = totalMessages;
+          document.getElementById("ideaCount").innerText = totalCategories.IDEA_GENERATION;
+          document.getElementById("refinementCount").innerText = totalCategories.REFINEMENT;
+          document.getElementById("informationCount").innerText = totalCategories.INFORMATION;
+          document.getElementById("cognitiveCount").innerText = totalCategories.COGNITIVE;
+          document.getElementById("otherCount").innerText = totalCategories.OTHER;
+
+          // ================= TOTAL PIE CHART =================
+          new Chart(document.getElementById("totalPieChart"), {
+            type: "pie",
+            data: {
+              labels: [
+                "Idea Generation",
+                "Refinement",
+                "Information",
+                "Cognitive",
+                "Other",
+              ],
+              datasets: [
+                {
+                  data: [
+                    totalCategories.IDEA_GENERATION,
+                    totalCategories.REFINEMENT,
+                    totalCategories.INFORMATION,
+                    totalCategories.COGNITIVE,
+                    totalCategories.OTHER,
+                  ],
+                  backgroundColor: [
+                    "#4caf50",
+                    "#2196f3",
+                    "#ff9800",
+                    "#9c27b0",
+                    "#9e9e9e",
+                  ],
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              plugins: {
+                legend: {
+                  position: "bottom",
+                },
+              },
+            },
+          });
+
+               let currentIndex = 0;
+               let chartInstance = null;
+
+              function toggleCharts() {
+                const section = document.getElementById("chartsSection");
+                section.style.display =
+                  section.style.display === "none" ? "block" : "none";
+                  renderUserChart();
+              }
+
+              function renderUserChart() {
+        const user = usersData[currentIndex];
+
+        document.getElementById("userTitle").innerText = `User ${user.userNo}`;
+
+        const ctx = document.getElementById("singleChart");
+
+        if (chartInstance) {
+          chartInstance.destroy(); // prevent overlapping charts
         }
-      });
 
-      document.getElementById("totalMessages").innerText = totalMessages;
-
-      // ================= TOTAL PIE CHART =================
-      new Chart(document.getElementById("totalPieChart"), {
-        type: "pie",
-        data: {
-          labels: [
-            "Idea Generation",
-            "Refinement",
-            "Information",
-            "Cognitive",
-            "Other",
-          ],
-          datasets: [
-            {
+        chartInstance = new Chart(ctx, {
+          type: "pie",
+          data: {
+            labels: [
+              "Idea Generation",
+              "Refinement",
+              "Information",
+              "Cognitive",
+              "Other"
+            ],
+            datasets: [{
               data: [
-                totalCategories.IDEA_GENERATION,
-                totalCategories.REFINEMENT,
-                totalCategories.INFORMATION,
-                totalCategories.COGNITIVE,
-                totalCategories.OTHER,
+                user.categories.IDEA_GENERATION,
+                user.categories.REFINEMENT,
+                user.categories.INFORMATION,
+                user.categories.COGNITIVE,
+                user.categories.OTHER
               ],
               backgroundColor: [
                 "#4caf50",
                 "#2196f3",
                 "#ff9800",
                 "#9c27b0",
-                "#9e9e9e",
-              ],
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: {
-              position: "bottom",
-            },
+                "#9e9e9e"
+              ]
+            }]
           },
-        },
-      });
-
-          let chartsLoaded = false;
-
-          function toggleCharts() {
-            const section = document.getElementById("chartsSection");
-            section.style.display =
-              section.style.display === "none" ? "block" : "none";
-
-            if (!chartsLoaded) {
-              loadCharts();
-              chartsLoaded = true;
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { position: "bottom" }
             }
           }
+        });
+      }
 
-          function loadCharts() {
-            usersData.forEach(user => {
-              new Chart(document.getElementById(`chart-${user.userNo}`), {
-                type: "pie",
-                data: {
-                  labels: [
-                    "Idea Generation",
-                    "Refinement",
-                    "Information",
-                    "Cognitive",
-                    "Other"
-                  ],
-                  datasets: [{
-                    data: [
-                      user.categories.IDEA_GENERATION,
-                      user.categories.REFINEMENT,
-                      user.categories.INFORMATION,
-                      user.categories.COGNITIVE,
-                      user.categories.OTHER
-                    ],
-                    backgroundColor: [
-                      "#4caf50",
-                      "#2196f3",
-                      "#ff9800",
-                      "#9c27b0",
-                      "#9e9e9e"
-                    ]
-                  }]
-                },
-                options: {
-                  responsive: true,
-                  plugins: {
-                    legend: {
-                      position: "bottom"
-                    }
-                  }
-                }
-              });
-            });
-          }
+      document.getElementById("nextBtn").onclick = () => {
+        currentIndex = (currentIndex + 1) % usersData.length;
+        renderUserChart();
+      };
+
+      document.getElementById("prevBtn").onclick = () => {
+        currentIndex =
+          (currentIndex - 1 + usersData.length) % usersData.length;
+        renderUserChart();
+      };
     </script>
   </body>
 </html>
