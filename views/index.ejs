@@ -59,12 +59,24 @@
         object-fit: cover;
       }
 
-      .page-header h2 {
+      .header-text {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .header-text h2 {
         margin: 0;
         font-size: 22px;
         font-weight: 600;
       }
 
+      .header-text h3 {
+        margin: 0;
+        font-size: 15px;
+        font-weight: 500;
+        color: #666;
+      }
       /* Table */
       table {
         width: 100%;
@@ -172,9 +184,11 @@
     <div class="dashboard">
       <div class="card page-header">
         <img src="/chatgpt.png" alt="ChatGPT Icon" />
-        <h2>ChatGPT Usage Analytics</h2>
-        <br />
-        <h3>Admin Dashboard</h3>
+
+        <div class="header-text">
+          <h2>ChatGPT Usage Analytics</h2>
+          <h3>Admin Dashboard</h3>
+        </div>
       </div>
 
       <!-- ================= SESSION-WISE TABLE ================= -->
